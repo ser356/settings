@@ -12,11 +12,9 @@
       <img src="@/assets/keygen.png" alt="Imagen adaptada" />
 
       <!-- Inputs encima de la imagen -->
-      <label for="serial" class="input-label serial-label">Hardware Code:</label>
-      <input id="serial" v-model="serial" type="text" class="input-field serial" />
+      <input id="serial" v-model="serial" type="text" class="input-field serial" placeholder="Hardware Code" />
       
-      <label for="response" class="input-label response-label">Log:</label>
-      <input id="response" v-model="response" type="text" class="input-field response" readonly />
+      <input id="response" v-model="response" type="text" class="input-field response" placeholder="Log" readonly />
 
       <button @click="generateKey" class="generate-btn">Generate</button>
       <button @click="aboutAction" class="about-btn">About</button>
@@ -182,22 +180,29 @@ const stopDrag = () => {
 
 .input-field {
   position: absolute;
-  background: rgba(255, 255, 255, 0.9);
-  color: black;
-  border: 1px solid #ccc;
-  padding: 5px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #00ff00;
+  border: 2px solid #444;
+  padding: 10px 12px;
   font-size: 14px;
-  width: 70%; /* Aumentamos el ancho */
+  font-family: 'Courier New', monospace;
+  width: 70%;
   text-align: left;
   transform: translateX(-50%);
-  left: 49.5%; /* Centramos completamente */
+  left: 50%;
+  box-sizing: border-box;
+}
+
+.input-field::placeholder {
+  color: #888;
+  font-style: italic;
 }
 
 @media (max-width: 768px) {
   .input-field {
-    font-size: 16px; /* Prevents zoom on iOS */
-    padding: 8px;
-    width: 75%;
+    font-size: 16px;
+    padding: 12px;
+    width: 80%;
   }
 }
 
@@ -207,50 +212,18 @@ const stopDrag = () => {
 
 /* Posicionamiento específico de cada input */
 .serial {
-  top: 65%;
+  top: 58%;
 }
 .response {
-  top: 75%;
-}
-
-/* Labels */
-.input-label {
-  position: absolute;
-  color: rgb(255, 255, 255);
-  font-size: 14px;
-  width: auto; /* Solo ocupa el espacio necesario */
-  text-align: left; /* Alinea el texto a la izquierda */
-  padding: 2px 5px;
-  border-radius: 3px;
-  left: 13%; /* Ajusta el margen izquierdo */
-  background: rgba(0, 0, 0, 0.6);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-
-
-.serial-label {
-  color: rgb(255, 255, 255);
-  
-  top: 56%; /* Ajustado para mantenerse dentro del recuadro */
-}
-
-.response-label {
-  top: 70%; /* Ajustado para que coincida con el input */
+  top: 72%;
 }
 
 @media (max-width: 768px) {
-  .serial-label {
-    top: 54%;
-  }
-  .response-label {
-    top: 68%;
-  }
   .serial {
-    top: 60%;
+    top: 55%;
   }
   .response {
-    top: 74%;
+    top: 70%;
   }
 }
 
