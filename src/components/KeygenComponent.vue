@@ -9,17 +9,27 @@
     </div>
 
     <div class="content">
-      <img src="@/assets/keygen.png" alt="Imagen adaptada" />
-
-      <!-- Inputs encima de la imagen -->
-      <input id="serial" v-model="serial" type="text" class="input-field serial" placeholder="Hardware Code" />
+      <div class="image-container">
+        <img src="@/assets/keygen.png" alt="Imagen adaptada" />
+      </div>
       
-      <input id="response" v-model="response" type="text" class="input-field response" placeholder="Log" readonly />
-
-      <button @click="generateKey" class="generate-btn">Generate</button>
-      <button @click="aboutAction" class="about-btn">About</button>
-
-      <button @click="copyResponse" class="copy-btn">Copy</button>
+      <div class="form-panel">
+        <div class="field-group">
+          <label class="field-label">Hardware Code :</label>
+          <input v-model="serial" type="text" class="input-field" />
+        </div>
+        
+        <div class="field-group">
+          <label class="field-label">Log :</label>
+          <input v-model="response" type="text" class="input-field" readonly />
+        </div>
+        
+        <div class="button-row">
+          <button @click="generateKey">Generate</button>
+          <button @click="aboutAction">About</button>
+          <button @click="copyResponse">Copy</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -102,49 +112,34 @@ const stopDrag = () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 580px;
-  height: 500px;
-  max-width: 95vw;
-  max-height: 90vh;
-  background: #f5f5f7;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 420px;
+  background: #f5f5f5;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
   .window {
     width: 90vw;
-    height: auto;
-    max-width: 90vw;
-    aspect-ratio: 580 / 500;
-  }
-}
-
-@media (max-width: 480px) {
-  .window {
-    width: 95vw;
-    max-width: 95vw;
+    max-width: 420px;
   }
 }
 
 .title-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: #ddd;
-  padding: 8px;
-  font-weight: bold;
-  font-size: 14px;
+  background: linear-gradient(to bottom, #e8e8e8, #d0d0d0);
+  padding: 12px 14px;
   cursor: grab;
+  border-bottom: 1px solid #b0b0b0;
 }
 
 .title-bar .buttons {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .title-bar .buttons span {
@@ -165,137 +160,113 @@ const stopDrag = () => {
 }
 
 .content {
-  flex-grow: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  flex-direction: column;
 }
 
-.content img {
+.image-container {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background: #000;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.form-panel {
+  background: #1e1e1e;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  color: #ffffff;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
 }
 
 .input-field {
-  position: absolute;
-  background: rgba(0, 0, 0, 0.85);
-  color: #00ff00;
-  border: 2px solid #444;
-  padding: 10px 12px;
+  background: #0a0a0a;
+  color: #ffffff;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 8px 10px;
   font-size: 14px;
-  font-family: 'Courier New', monospace;
-  width: 70%;
-  text-align: left;
-  transform: translateX(-50%);
-  left: 50%;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  width: 100%;
   box-sizing: border-box;
 }
 
-.input-field::placeholder {
-  color: #888;
-  font-style: italic;
+.input-field:focus {
+  outline: none;
+  border-color: #0a84ff;
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3);
 }
 
 @media (max-width: 768px) {
   .input-field {
     font-size: 16px;
     padding: 12px;
-    width: 80%;
+  }
+  
+  .field-label {
+    font-size: 14px;
+  }
+  
+  .form-panel {
+    padding: 20px;
+    gap: 14px;
   }
 }
 
-
-
-
-
-/* Posicionamiento específico de cada input */
-.serial {
-  top: 58%;
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
 }
-.response {
-  top: 72%;
-}
-
-@media (max-width: 768px) {
-  .serial {
-    top: 55%;
-  }
-  .response {
-    top: 70%;
-  }
-}
-
 
 button {
-  position: absolute;
-  background: #e0e0e0;
-  color: black;
-  border: 2px solid #b0b0b0;
-  padding: 5px 10px;
-  font-size: 14px;
+  background: #3a3a3a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
   cursor: pointer;
-  box-shadow: 1px 1px 0px #fff inset, -1px -1px 0px #fff inset, 1px 1px 0px #808080, -1px -1px 0px #808080;
-  border-radius: 0; /* Hace que los bordes sean cuadrados */
+  min-width: 80px;
+  transition: all 0.15s;
 }
 
+button:hover {
+  background: #4a4a4a;
+}
 
 button:active {
-  box-shadow: inset 1px 1px 0px #808080, inset -1px -1px 0px #808080, inset 1px 1px 0px #fff, inset -1px -1px 0px #fff;
-}
-
-.generate-btn {
-  bottom: 2%;
-  left: 20%;
-}
-
-.about-btn {
-  bottom: 2%;
-  left: 51%;
-  transform: translateX(-50%);
-}
-
-.copy-btn {
-  bottom: 2%;
-  right: 21%;
+  background: #2a2a2a;
 }
 
 @media (max-width: 768px) {
   button {
-    padding: 8px 12px;
-    font-size: 12px;
-    min-height: 36px;
+    padding: 12px 16px;
+    font-size: 14px;
+    min-width: 70px;
+    flex: 1;
   }
   
-  .generate-btn {
-    left: 5%;
-  }
-  
-  .copy-btn {
-    right: 5%;
-  }
-  
-  .input-label {
-    font-size: 12px;
-    left: 10%;
+  .button-row {
+    gap: 10px;
   }
 }
-
-@media (max-width: 400px) {
-  button {
-    padding: 6px 8px;
-    font-size: 11px;
-  }
-  
-  .input-field {
-    width: 80%;
-  }
-  
-  .input-label {
-    left: 8%;
-    font-size: 11px;
-  }
-}
-
 </style>
