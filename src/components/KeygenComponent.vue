@@ -223,6 +223,8 @@ const stopDrag = () => {
   padding: 2px 5px;
   border-radius: 3px;
   left: 13%; /* Ajusta el margen izquierdo */
+  background: rgba(0, 0, 0, 0.6);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 
@@ -230,11 +232,26 @@ const stopDrag = () => {
 .serial-label {
   color: rgb(255, 255, 255);
   
-  top: 60%; /* Ajustado para mantenerse dentro del recuadro */
+  top: 56%; /* Ajustado para mantenerse dentro del recuadro */
 }
 
 .response-label {
   top: 70%; /* Ajustado para que coincida con el input */
+}
+
+@media (max-width: 768px) {
+  .serial-label {
+    top: 54%;
+  }
+  .response-label {
+    top: 68%;
+  }
+  .serial {
+    top: 60%;
+  }
+  .response {
+    top: 74%;
+  }
 }
 
 
