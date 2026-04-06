@@ -1,6 +1,6 @@
 <template>
   <div class="window" ref="window">
-    <div class="title-bar" @mousedown="startDrag">
+    <div class="title-bar" @mousedown="startDrag" @touchstart="startDrag">
       <div class="buttons">
         <span class="close"></span>
         <span class="minimize"></span>
@@ -61,26 +61,40 @@ const aboutAction = () => {
   alert("⚙️ 2025");
 };
 
-// --- DRAG ---
+// --- DRAG (mouse + touch) ---
+const getClientPos = (event) => {
+  if (event.touches && event.touches.length > 0) {
+    return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }
+  return { x: event.clientX, y: event.clientY };
+};
+
 const startDrag = (event) => {
   event.preventDefault();
-  offsetX.value = event.clientX - window.value.offsetLeft;
-  offsetY.value = event.clientY - window.value.offsetTop;
+  const pos = getClientPos(event);
+  offsetX.value = pos.x - window.value.offsetLeft;
+  offsetY.value = pos.y - window.value.offsetTop;
 
   document.addEventListener("mousemove", drag);
   document.addEventListener("mouseup", stopDrag);
+  document.addEventListener("touchmove", drag, { passive: false });
+  document.addEventListener("touchend", stopDrag);
 };
 
 const drag = (event) => {
   if (window.value) {
-    window.value.style.left = `${event.clientX - offsetX.value}px`;
-    window.value.style.top = `${event.clientY - offsetY.value}px`;
+    event.preventDefault();
+    const pos = getClientPos(event);
+    window.value.style.left = `${pos.x - offsetX.value}px`;
+    window.value.style.top = `${pos.y - offsetY.value}px`;
   }
 };
 
 const stopDrag = () => {
   document.removeEventListener("mousemove", drag);
   document.removeEventListener("mouseup", stopDrag);
+  document.removeEventListener("touchmove", drag);
+  document.removeEventListener("touchend", stopDrag);
 };
 </script>
 
@@ -92,12 +106,31 @@ const stopDrag = () => {
   transform: translate(-50%, -50%);
   width: 580px;
   height: 500px;
+  max-width: 95vw;
+  max-height: 90vh;
   background: #f5f5f7;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .window {
+    width: 90vw;
+    height: auto;
+    max-width: 90vw;
+    aspect-ratio: 580 / 500;
+  }
+}
+
+@media (max-width: 480px) {
+  .window {
+    width: 95vw;
+    max-width: 95vw;
+  }
 }
 
 .title-bar {
@@ -158,6 +191,14 @@ const stopDrag = () => {
   text-align: left;
   transform: translateX(-50%);
   left: 49.5%; /* Centramos completamente */
+}
+
+@media (max-width: 768px) {
+  .input-field {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 8px;
+    width: 75%;
+  }
 }
 
 
@@ -228,6 +269,43 @@ button:active {
 .copy-btn {
   bottom: 2%;
   right: 21%;
+}
+
+@media (max-width: 768px) {
+  button {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-height: 36px;
+  }
+  
+  .generate-btn {
+    left: 5%;
+  }
+  
+  .copy-btn {
+    right: 5%;
+  }
+  
+  .input-label {
+    font-size: 12px;
+    left: 10%;
+  }
+}
+
+@media (max-width: 400px) {
+  button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .input-field {
+    width: 80%;
+  }
+  
+  .input-label {
+    left: 8%;
+    font-size: 11px;
+  }
 }
 
 </style>
