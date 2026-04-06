@@ -1,5 +1,5 @@
 <template>
-  <div class="window" ref="window">
+  <div class="window" ref="window" :class="{ 'is-mobile': isMobile }">
     <div class="title-bar" @mousedown="startDrag" @touchstart="startDrag">
       <div class="buttons">
         <span class="close"></span>
@@ -14,7 +14,7 @@
       <!-- Inputs encima de la imagen -->
       <label for="serial" class="input-label serial-label">Hardware Code:</label>
       <input id="serial" v-model="serial" type="text" class="input-field serial" />
-      
+
       <label for="response" class="input-label response-label">Log:</label>
       <input id="response" v-model="response" type="text" class="input-field response" readonly />
 
@@ -23,24 +23,41 @@
 
       <button @click="copyResponse" class="copy-btn">Copy</button>
     </div>
+
+    <!-- Resize handle for mobile -->
+    <div
+      v-if="isMobile"
+      class="resize-handle"
+      @touchstart="startResize"
+    ></div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { onMounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import music from "@/assets/keygen.mp3";
-
 
 const playAudio = () => {
   const audio = new Audio(music);
   audio.play().catch(error => console.error("Error playing audio:", error));
 };
 
+const windowWidth = ref(globalThis.innerWidth);
+const isMobile = computed(() => windowWidth.value <= 768);
+
+const onResize = () => {
+  windowWidth.value = globalThis.innerWidth;
+};
+
 onMounted(() => {
   document.addEventListener("click", () => {
     playAudio();
-  }, { once: true }); // Se ejecuta una sola vez
+  }, { once: true });
+  globalThis.addEventListener("resize", onResize);
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener("resize", onResize);
 });
 
 const window = ref(null);
@@ -51,7 +68,7 @@ const offsetX = ref(0);
 const offsetY = ref(0);
 
 const generateKey = () => {
-  response.value = "AJUSTES-AJUSTES-AJUSTES"; // Simulación de respuesta
+  response.value = "AJUSTES-AJUSTES-AJUSTES";
 };
 
 const copyResponse = () => {
@@ -96,6 +113,41 @@ const stopDrag = () => {
   document.removeEventListener("touchmove", drag);
   document.removeEventListener("touchend", stopDrag);
 };
+
+// --- RESIZE (touch for mobile) ---
+const resizeStartX = ref(0);
+const resizeStartY = ref(0);
+const resizeStartW = ref(0);
+const resizeStartH = ref(0);
+
+const startResize = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  const pos = getClientPos(event);
+  resizeStartX.value = pos.x;
+  resizeStartY.value = pos.y;
+  resizeStartW.value = window.value.offsetWidth;
+  resizeStartH.value = window.value.offsetHeight;
+
+  document.addEventListener("touchmove", resizeDrag, { passive: false });
+  document.addEventListener("touchend", stopResize);
+};
+
+const resizeDrag = (event) => {
+  if (window.value) {
+    event.preventDefault();
+    const pos = getClientPos(event);
+    const newW = resizeStartW.value + (pos.x - resizeStartX.value);
+    const newH = resizeStartH.value + (pos.y - resizeStartY.value);
+    window.value.style.width = `${Math.max(260, newW)}px`;
+    window.value.style.height = `${Math.max(220, newH)}px`;
+  }
+};
+
+const stopResize = () => {
+  document.removeEventListener("touchmove", resizeDrag);
+  document.removeEventListener("touchend", stopResize);
+};
 </script>
 
 <style scoped>
@@ -114,22 +166,33 @@ const stopDrag = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Resize en escritorio */
+  resize: both;
+  min-width: 320px;
+  min-height: 280px;
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
   .window {
-    width: 90vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92vw;
     height: auto;
-    max-width: 90vw;
-    aspect-ratio: 580 / 500;
+    max-width: 92vw;
+    max-height: 85vh;
+    aspect-ratio: 580 / 520;
+    resize: none;
   }
 }
 
 @media (max-width: 480px) {
   .window {
-    width: 95vw;
-    max-width: 95vw;
+    width: 96vw;
+    max-width: 96vw;
+    aspect-ratio: 580 / 540;
   }
 }
 
@@ -142,6 +205,7 @@ const stopDrag = () => {
   font-weight: bold;
   font-size: 14px;
   cursor: grab;
+  flex-shrink: 0;
 }
 
 .title-bar .buttons {
@@ -172,6 +236,7 @@ const stopDrag = () => {
   justify-content: center;
   align-items: center;
   position: relative;
+  min-height: 0;
 }
 
 .content img {
@@ -187,23 +252,20 @@ const stopDrag = () => {
   border: 1px solid #ccc;
   padding: 5px;
   font-size: 14px;
-  width: 70%; /* Aumentamos el ancho */
+  width: 70%;
   text-align: left;
   transform: translateX(-50%);
-  left: 49.5%; /* Centramos completamente */
+  left: 49.5%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .input-field {
-    font-size: 16px; /* Prevents zoom on iOS */
-    padding: 8px;
-    width: 75%;
+    font-size: 16px;
+    padding: 6px 8px;
+    width: 72%;
   }
 }
-
-
-
-
 
 /* Posicionamiento específico de cada input */
 .serial {
@@ -218,25 +280,21 @@ const stopDrag = () => {
   position: absolute;
   color: rgb(255, 255, 255);
   font-size: 14px;
-  width: auto; /* Solo ocupa el espacio necesario */
-  text-align: left; /* Alinea el texto a la izquierda */
+  width: auto;
+  text-align: left;
   padding: 2px 5px;
   border-radius: 3px;
-  left: 13%; /* Ajusta el margen izquierdo */
+  left: 13%;
 }
-
-
 
 .serial-label {
   color: rgb(255, 255, 255);
-  
-  top: 60%; /* Ajustado para mantenerse dentro del recuadro */
+  top: 60%;
 }
 
 .response-label {
-  top: 70%; /* Ajustado para que coincida con el input */
+  top: 70%;
 }
-
 
 button {
   position: absolute;
@@ -247,9 +305,8 @@ button {
   font-size: 14px;
   cursor: pointer;
   box-shadow: 1px 1px 0px #fff inset, -1px -1px 0px #fff inset, 1px 1px 0px #808080, -1px -1px 0px #808080;
-  border-radius: 0; /* Hace que los bordes sean cuadrados */
+  border-radius: 0;
 }
-
 
 button:active {
   box-shadow: inset 1px 1px 0px #808080, inset -1px -1px 0px #808080, inset 1px 1px 0px #fff, inset -1px -1px 0px #fff;
@@ -273,39 +330,67 @@ button:active {
 
 @media (max-width: 768px) {
   button {
-    padding: 8px 12px;
+    padding: 6px 10px;
     font-size: 12px;
-    min-height: 36px;
+    min-height: 32px;
   }
-  
+
   .generate-btn {
-    left: 5%;
+    left: 8%;
   }
-  
+
   .copy-btn {
-    right: 5%;
+    right: 8%;
   }
-  
+
   .input-label {
-    font-size: 12px;
-    left: 10%;
+    font-size: 11px;
+    left: 12%;
   }
 }
 
 @media (max-width: 400px) {
   button {
-    padding: 6px 8px;
-    font-size: 11px;
+    padding: 5px 8px;
+    font-size: 10px;
   }
-  
+
   .input-field {
-    width: 80%;
+    width: 76%;
+    font-size: 14px;
+    padding: 5px 6px;
   }
-  
+
   .input-label {
-    left: 8%;
-    font-size: 11px;
+    left: 10%;
+    font-size: 10px;
   }
 }
 
+/* Resize handle for mobile */
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  cursor: nwse-resize;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    #b0b0b0 40%,
+    #b0b0b0 45%,
+    transparent 45%,
+    transparent 55%,
+    #b0b0b0 55%,
+    #b0b0b0 60%,
+    transparent 60%,
+    transparent 70%,
+    #b0b0b0 70%,
+    #b0b0b0 75%,
+    transparent 75%
+  );
+  z-index: 10;
+  touch-action: none;
+}
 </style>
