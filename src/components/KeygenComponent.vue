@@ -10,18 +10,22 @@
 
     <div class="content">
       <img src="@/assets/keygen.png" alt="Imagen adaptada" />
+    </div>
 
-      <!-- Inputs encima de la imagen -->
-      <label for="serial" class="input-label serial-label">Hardware Code:</label>
-      <input id="serial" v-model="serial" type="text" class="input-field serial" />
-
-      <label for="response" class="input-label response-label">Log:</label>
-      <input id="response" v-model="response" type="text" class="input-field response" readonly />
-
-      <button @click="generateKey" class="generate-btn">Generate</button>
-      <button @click="aboutAction" class="about-btn">About</button>
-
-      <button @click="copyResponse" class="copy-btn">Copy</button>
+    <div class="form-area">
+      <div class="form-group">
+        <label for="serial" class="input-label">Hardware Code:</label>
+        <input id="serial" v-model="serial" type="text" class="input-field" />
+      </div>
+      <div class="form-group">
+        <label for="response" class="input-label">Log:</label>
+        <input id="response" v-model="response" type="text" class="input-field" readonly />
+      </div>
+      <div class="button-row">
+        <button @click="generateKey" class="generate-btn">Generate</button>
+        <button @click="aboutAction" class="about-btn">About</button>
+        <button @click="copyResponse" class="copy-btn">Copy</button>
+      </div>
     </div>
 
     <!-- Resize handle for mobile -->
@@ -157,22 +161,19 @@ const stopResize = () => {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 580px;
-  height: 500px;
   max-width: 95vw;
   max-height: 90vh;
-  background: #f5f5f7;
+  background: #555;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Resize en escritorio */
   resize: both;
   min-width: 320px;
   min-height: 280px;
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
   .window {
     position: fixed;
@@ -180,10 +181,8 @@ const stopResize = () => {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 92vw;
-    height: auto;
     max-width: 92vw;
-    max-height: 85vh;
-    aspect-ratio: 580 / 520;
+    max-height: 90vh;
     resize: none;
   }
 }
@@ -192,7 +191,6 @@ const stopResize = () => {
   .window {
     width: 96vw;
     max-width: 96vw;
-    aspect-ratio: 580 / 540;
   }
 }
 
@@ -231,139 +229,110 @@ const stopResize = () => {
 }
 
 .content {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  flex-shrink: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .content img {
   width: 100%;
   height: 100%;
+  display: block;
   object-fit: cover;
 }
 
+.form-area {
+  flex-shrink: 0;
+  background: #555;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.input-label {
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  text-align: left;
+  padding: 0 2px;
+}
+
 .input-field {
-  position: absolute;
   background: rgba(255, 255, 255, 0.9);
   color: black;
   border: 1px solid #ccc;
-  padding: 5px;
+  padding: 6px 8px;
   font-size: 14px;
-  width: 70%;
+  width: 100%;
   text-align: left;
-  transform: translateX(-50%);
-  left: 49.5%;
   box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .input-field {
     font-size: 16px;
-    padding: 6px 8px;
-    width: 72%;
+    padding: 8px 10px;
   }
 }
 
-/* Posicionamiento específico de cada input */
-.serial {
-  top: 65%;
-}
-.response {
-  top: 75%;
-}
-
-/* Labels */
-.input-label {
-  position: absolute;
-  color: rgb(255, 255, 255);
-  font-size: 14px;
-  width: auto;
-  text-align: left;
-  padding: 2px 5px;
-  border-radius: 3px;
-  left: 13%;
-}
-
-.serial-label {
-  color: rgb(255, 255, 255);
-  top: 60%;
-}
-
-.response-label {
-  top: 70%;
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 button {
-  position: absolute;
   background: #e0e0e0;
   color: black;
   border: 2px solid #b0b0b0;
-  padding: 5px 10px;
+  padding: 6px 16px;
   font-size: 14px;
   cursor: pointer;
   box-shadow: 1px 1px 0px #fff inset, -1px -1px 0px #fff inset, 1px 1px 0px #808080, -1px -1px 0px #808080;
   border-radius: 0;
+  flex: 1;
 }
 
 button:active {
   box-shadow: inset 1px 1px 0px #808080, inset -1px -1px 0px #808080, inset 1px 1px 0px #fff, inset -1px -1px 0px #fff;
 }
 
-.generate-btn {
-  bottom: 2%;
-  left: 20%;
-}
-
-.about-btn {
-  bottom: 2%;
-  left: 51%;
-  transform: translateX(-50%);
-}
-
-.copy-btn {
-  bottom: 2%;
-  right: 21%;
-}
-
 @media (max-width: 768px) {
   button {
-    padding: 6px 10px;
-    font-size: 12px;
-    min-height: 32px;
-  }
-
-  .generate-btn {
-    left: 8%;
-  }
-
-  .copy-btn {
-    right: 8%;
+    padding: 8px 12px;
+    font-size: 13px;
+    min-height: 36px;
   }
 
   .input-label {
-    font-size: 11px;
-    left: 12%;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 400px) {
   button {
-    padding: 5px 8px;
-    font-size: 10px;
+    padding: 6px 8px;
+    font-size: 12px;
   }
 
   .input-field {
-    width: 76%;
     font-size: 14px;
-    padding: 5px 6px;
+    padding: 6px 8px;
   }
 
   .input-label {
-    left: 10%;
-    font-size: 10px;
+    font-size: 12px;
+  }
+
+  .form-area {
+    padding: 10px 12px;
   }
 }
 
@@ -378,16 +347,16 @@ button:active {
   background: linear-gradient(
     135deg,
     transparent 40%,
-    #b0b0b0 40%,
-    #b0b0b0 45%,
+    #888 40%,
+    #888 45%,
     transparent 45%,
     transparent 55%,
-    #b0b0b0 55%,
-    #b0b0b0 60%,
+    #888 55%,
+    #888 60%,
     transparent 60%,
     transparent 70%,
-    #b0b0b0 70%,
-    #b0b0b0 75%,
+    #888 70%,
+    #888 75%,
     transparent 75%
   );
   z-index: 10;
